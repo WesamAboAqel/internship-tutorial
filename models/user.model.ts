@@ -6,6 +6,7 @@ import {
   InferCreationAttributes,
   CreationOptional,
 } from '@sequelize/core';
+import { attribute } from '@sequelize/core/_non-semver-use-at-your-own-risk_/expression-builders/attribute.js';
 import { Attribute, PrimaryKey, AutoIncrement, NotNull } from '@sequelize/core/decorators-legacy';
 // import { SqliteDialect } from '@sequelize/sqlite3';
 
@@ -23,4 +24,12 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   @Attribute(DataTypes.STRING)
   declare lastName: string | null;
+
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare username: string;
+
+  @Attribute(DataTypes.STRING)
+  @NotNull
+  declare password: string;
 }
