@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/user.model.js";
+import { User, UserInit } from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import {
+    createUser,
+    getUserByUsername,
+} from "../repository/user.repository.js";
 
 // @desc    get All Users
 // @route   GET /api/users/
@@ -23,18 +27,25 @@ export const register = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const { firstName, lastName, username, password } = request.body;
+    const { firstName, lastName, username, password, email } = request.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
-        firstName: firstName,
-        lastName: lastName,
-        username: username,
+    const params: UserInit = {
+        firstName,
+        lastName,
+        username,
         password: hashedPassword,
-    });
+        email,
+    };
 
-    response.send({ msg: "Register Successful", user });
+    const user = await createUser(params);
+
+    response.locals.user = user;
+
+    
+
+    next();
 };
 
 // @desc    Login using username and password
@@ -47,11 +58,7 @@ export const login = async (
 ): Promise<void> => {
     const { username, password } = request.body;
 
-    const user = await User.findOne({
-        where: {
-            username: username,
-        },
-    });
+    const user = await getUserByUsername(username);
 
     if (!user) {
         response.send("User not found!");
@@ -59,12 +66,14 @@ export const login = async (
     }
 
     const match = await bcrypt.compare(password, user.password);
-    console.log(match);
+    // console.log(match);
 
     if (!match) {
         response.send("Invalid Credentials");
         return;
     }
 
-    response.send("Welcome Back!").end();
+    response.locals.user = user;
+    next();
+    // response.send("Welcome Back!").end();
 };

@@ -4,16 +4,22 @@ import {
     login,
     register,
 } from "../controllers/user.controller.js";
+import {
+    Authenticate,
+    tokenGeneration,
+} from "../middleware/authentication.middleware.js";
+import { registerEmail } from "../middleware/mail.middleware.js";
+import { registerSuccess } from "../middleware/utils.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllUsers);
+router.get("/", Authenticate, getAllUsers);
 
 // router.get("/add/wesam", addWesam);
 // router.get("/add/ahmad", addAhmad);
 
-router.post("/register", register);
+router.post("/register", register, registerEmail, registerSuccess);
 
-router.post("/login", login);
+router.post("/login", login, tokenGeneration);
 
 export default router;
