@@ -8,7 +8,7 @@ import {
     Authenticate,
     tokenGeneration,
 } from "../middleware/authentication.middleware.js";
-import { registerEmail } from "../middleware/mail.middleware.js";
+import { registerEmail } from "../utils/mail.utils.js";
 import { registerSuccess } from "../middleware/utils.middleware.js";
 
 const router = express.Router();

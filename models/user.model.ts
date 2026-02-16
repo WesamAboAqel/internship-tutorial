@@ -14,6 +14,7 @@ import {
     NotNull,
     Unique,
 } from "@sequelize/core/decorators-legacy";
+import Joi from "joi";
 // import { SqliteDialect } from '@sequelize/sqlite3';
 
 // const sequelize = new Sequelize({ dialect: SqliteDialect });
@@ -49,10 +50,18 @@ export class User extends Model<
     declare email: string;
 }
 
-export interface UserInit {
+export interface IUserInit {
     firstName: string;
     lastName: string;
     username: string;
     password: string;
     email: string;
 }
+
+export const JUserInit = Joi.object({
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    username: Joi.string().alphanum().required(),
+    password: Joi.string().required(),
+    email: Joi.string().email().required(),
+});

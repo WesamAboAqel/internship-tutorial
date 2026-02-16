@@ -1,4 +1,4 @@
-import { User, UserInit } from "../models/user.model.js";
+import { IUserInit, User } from "../models/user.model.js";
 
 // @param      username - string
 // @returns    User - User
@@ -24,7 +24,7 @@ export const getUserByUsername = async (username: string): Promise<User> => {
 // @param      params - UserInit
 // @returns    user - User
 // @notes      Creates a user
-export const createUser = async (params: UserInit): Promise<User> => {
+export const createUser = async (params: IUserInit): Promise<User> => {
     try {
         const user = await User.create({
             firstName: params.firstName,
