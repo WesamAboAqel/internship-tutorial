@@ -15,9 +15,12 @@ import {
     BeforeCreate,
     Default,
     Table,
+    AfterSave,
 } from "@sequelize/core/decorators-legacy";
 import bcrypt from "bcrypt";
 import { User } from "./user.model.js";
+import Joi from "joi";
+import crypto from "crypto";
 
 @Table({ tableName: "Sessions" })
 export class Session extends Model<
@@ -40,12 +43,12 @@ export class Session extends Model<
     @Attribute(DataTypes.DATE)
     @NotNull
     @Default(new Date())
-    declare createdAt: Date;
+    declare createdAt?: Date;
 
     @Attribute(DataTypes.DATE)
     @NotNull
     @Default(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
-    declare expiresAt: Date;
+    declare expiresAt?: Date;
 
     @Attribute(DataTypes.DATE)
     declare revokedAt: Date | null;
@@ -55,9 +58,29 @@ export class Session extends Model<
 
     @BeforeCreate
     static async hashRefreshToken(session: Session) {
-        session.refreshTokenHash = await bcrypt.hash(
-            session.refreshTokenHash,
-            10,
-        );
+        session.refreshTokenHash = crypto
+            .createHash("sha256")
+            .update(session.refreshTokenHash)
+            .digest("hex");
     }
+
+    // @AfterSave
+    // static async revokeSession(session: Session) {
+    //     await session.update({ revokedAt: new Date() });
+    // }
+}
+
+export interface ISessionInit {
+    user_id: number;
+    refreshTokenHash: string;
+}
+
+export const JSessionInit = Joi.object({
+    user_id: Joi.number().required(),
+    refreshTokenHash: Joi.string().required(),
+});
+
+export interface ISessionRefresh {
+    oldRefreshTokenHash: string;
+    newRefreshToken: string;
 }

@@ -11,6 +11,11 @@ import {
 import { registerEmail } from "../utils/mail.utils.js";
 import { registerSuccess } from "../middleware/utils.middleware.js";
 import { upload } from "../middleware/upload.middleware.js";
+import {
+    generateTokens,
+    refreshTokens,
+    sendTokens,
+} from "../controllers/session.controller.js";
 
 const router = express.Router();
 
@@ -27,6 +32,8 @@ router.post(
     registerSuccess,
 );
 
-router.post("/login", login, tokenGeneration);
+router.post("/login", login, generateTokens, sendTokens);
+
+router.post("/refresh", refreshTokens, sendTokens);
 
 export default router;
