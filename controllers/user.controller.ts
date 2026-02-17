@@ -28,7 +28,8 @@ export const register = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { firstName, lastName, username, password, email } = request.body;
+        const { firstName, lastName, username, password, email, fileName } =
+            request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -38,6 +39,7 @@ export const register = async (
             username,
             password: hashedPassword,
             email,
+            fileName,
         };
 
         const { error } = JUserInit.validate(params);
@@ -50,7 +52,7 @@ export const register = async (
 
         next();
     } catch (error) {
-        throw new Error();
+        throw error;
     }
 };
 

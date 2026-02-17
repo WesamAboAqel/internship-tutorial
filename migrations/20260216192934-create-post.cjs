@@ -3,13 +3,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    
-
-    queryInterface.createTable("post", {
-      id:{
-        type: Sequelize.INTEGER,
+    await queryInterface.createTable('Post', {
+      id: {
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER
       },
       title: {
         type: Sequelize.STRING,
@@ -26,18 +25,22 @@ module.exports = {
           model: 'User',
           key: 'id'
         },
-        onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
-
       },
-      
-
-    })
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      }
+    });
   },
 
   async down (queryInterface, Sequelize) {
-    
-
-    await queryInterface.dropTable('post');
+    await queryInterface.dropTable('Post');
   }
 };

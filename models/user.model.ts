@@ -55,6 +55,9 @@ export class User extends Model<
     @Unique
     declare email: string;
 
+    @Attribute(DataTypes.STRING)
+    declare profilePicture: string;
+
     @CreatedAt
     @Default(new Date())
     declare createdAt?: Date;
@@ -75,6 +78,7 @@ export interface IUserInit {
     username: string;
     password: string;
     email: string;
+    fileName: string;
 }
 
 export const JUserInit = Joi.object({
@@ -83,4 +87,5 @@ export const JUserInit = Joi.object({
     username: Joi.string().alphanum().required(),
     password: Joi.string().required(),
     email: Joi.string().email().required(),
+    fileName: Joi.string(),
 });

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { transporter } from "../source/nodemailer.js";
+import { transporter } from "../services/nodemailer.js";
 import { User } from "../models/user.model.js";
 
 // @desc    Sends email

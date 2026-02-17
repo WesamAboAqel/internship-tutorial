@@ -32,11 +32,12 @@ export const createUser = async (params: IUserInit): Promise<User> => {
             username: params.username,
             password: params.password,
             email: params.email,
+            profilePicture: `uploads/${params.fileName}`,
         });
 
         return user;
     } catch (error) {
-        console.log(error);
-        throw new Error();
+        // console.log(error);
+        throw error;
     }
 };

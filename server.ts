@@ -7,7 +7,7 @@ import express from "express";
 import user from "./routes/user.route.js";
 import post from "./routes/post.route.js";
 import test from "./routes/test.route.js";
-import { testConnection } from "./source/sequalize.js";
+import { testConnection } from "./services/sequalize.js";
 // require('./source/sequalize')
 import logger from "./middleware/logger.middleware.js";
 

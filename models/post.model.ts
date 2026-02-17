@@ -58,8 +58,8 @@ export class Post extends Model<
     declare updatedAt?: Date;
 
     @BeforeSave
-    static setUpdatedAt(user: User) {
-        user.updatedAt = new Date();
+    static setUpdatedAt(post: Post) {
+        post.updatedAt = new Date();
     }
 }
 
