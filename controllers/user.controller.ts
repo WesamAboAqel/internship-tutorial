@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { IUserInit, JUserInit, User } from "../models/user.model.js";
+import {
+    IUserInit,
+    JUserInit,
+    User,
+    UserResponseDTO,
+} from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import {
     createUser,
@@ -28,18 +33,22 @@ export const register = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { firstName, lastName, username, password, email, fileName } =
-            request.body;
+        const { firstName, lastName, username, password, email } = request.body;
+
+        const key = (request.file as any)?.key;
+
+        // console.log(key);
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // console.log(key);
         const params: IUserInit = {
             firstName,
             lastName,
             username,
             password: hashedPassword,
             email,
-            fileName,
+            fileName: key,
         };
 
         const { error } = JUserInit.validate(params);
@@ -81,7 +90,7 @@ export const login = async (
         return;
     }
 
-    response.locals.user = user;
+    response.locals.user = new UserResponseDTO(user);
     next();
     // response.send("Welcome Back!").end();
 };

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { transporter } from "../services/nodemailer.js";
-import { User } from "../models/user.model.js";
+import { User, UserResponseDTO } from "../models/user.model.js";
 
 // @desc    Sends email
 // @route   GET /api/users/signup
@@ -10,7 +10,7 @@ export const registerEmail = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const user: User = response.locals.user;
+    const user: UserResponseDTO = response.locals.user;
 
     const info = await transporter.sendMail({
         from: `Wesam Abo Aqel wesamabuaqel138@gmail.com`,

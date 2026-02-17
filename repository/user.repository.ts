@@ -1,4 +1,4 @@
-import { IUserInit, User } from "../models/user.model.js";
+import { IUserInit, User, UserResponseDTO } from "../models/user.model.js";
 
 // @param      username - string
 // @returns    User - User
@@ -24,7 +24,9 @@ export const getUserByUsername = async (username: string): Promise<User> => {
 // @param      params - UserInit
 // @returns    user - User
 // @notes      Creates a user
-export const createUser = async (params: IUserInit): Promise<User> => {
+export const createUser = async (
+    params: IUserInit,
+): Promise<UserResponseDTO> => {
     try {
         const user = await User.create({
             firstName: params.firstName,
@@ -32,10 +34,10 @@ export const createUser = async (params: IUserInit): Promise<User> => {
             username: params.username,
             password: params.password,
             email: params.email,
-            profilePicture: `uploads/${params.fileName}`,
+            profilePicture: params.fileName,
         });
 
-        return user;
+        return new UserResponseDTO(user);
     } catch (error) {
         // console.log(error);
         throw error;

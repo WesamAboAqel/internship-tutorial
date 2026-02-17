@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: mysql_server
+        # restart: always
+        ports:
+            - "3333:3306" # expose port
+        environment:
+            MYSQL_ROOT_PASSWORD: 12345678
+            MYSQL_DATABASE: internship-tutorial
+            MYSQL_USER: intern
+            MYSQL_PASSWORD: 12345678
+        volumes:
+            - mysql_data:/var/lib/mysql
+
+volumes:
+    mysql_data:

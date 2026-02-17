@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { access } from "node:fs";
+import { UserResponseDTO } from "../models/user.model.js";
 
 // @desc    Authentication and Granting AccessTokens
 // @route   GET api/users/login
@@ -10,7 +11,7 @@ export const tokenGeneration = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const user = response.locals.user;
+    const user: UserResponseDTO = response.locals.user;
 
     const accessToken = jwt.sign(
         {
