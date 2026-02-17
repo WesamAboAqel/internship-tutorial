@@ -5,6 +5,7 @@ import express from "express";
 // import logger from "./middleware/logger.js";
 // import errorHandler from "./middleware/error_handler.js";
 import user from "./routes/user.route.js";
+import post from "./routes/post.route.js";
 import test from "./routes/test.route.js";
 import { testConnection } from "./source/sequalize.js";
 // require('./source/sequalize')
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(logger);
 
 app.use("/api/users", user);
+app.use("/api/posts", post);
 app.use("/api/hello", test);
 
 // app.use(errorHandler);

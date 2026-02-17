@@ -1,7 +1,7 @@
-import { Sequelize } from '@sequelize/core';
-import { MySqlDialect } from '@sequelize/mysql';
-import { User } from '../models/user.model.js';
-
+import { Sequelize } from "@sequelize/core";
+import { MySqlDialect } from "@sequelize/mysql";
+import { User } from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 
 // export const sequelize = new Sequelize( {
 //   dialect: MySqlDialect,
@@ -12,20 +12,20 @@ import { User } from '../models/user.model.js';
 //   port: 3306,
 // });
 
-const sequelize = new Sequelize({
+export const sequelize = new Sequelize({
     url: process.env.DATABASE_URL!,
     dialect: "mysql",
     logging: false,
-    models: [User],
+    models: [User, Post],
 });
 
 export const testConnection = async () => {
-  try {
-    // console.log(process.env.DATABASE_URL)
-    await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log("MySQL connected successfully.");
-  } catch (error) {
-    console.error("Unable to connect to MySQL:", error);
-  }
+    try {
+        // console.log(process.env.DATABASE_URL)
+        await sequelize.authenticate();
+        await sequelize.sync({ alter: true });
+        console.log("MySQL connected successfully.");
+    } catch (error) {
+        console.error("Unable to connect to MySQL:", error);
+    }
 };

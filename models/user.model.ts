@@ -13,12 +13,18 @@ import {
     AutoIncrement,
     NotNull,
     Unique,
+    Table,
+    CreatedAt,
+    UpdatedAt,
+    Default,
+    BeforeSave,
 } from "@sequelize/core/decorators-legacy";
 import Joi from "joi";
 // import { SqliteDialect } from '@sequelize/sqlite3';
 
 // const sequelize = new Sequelize({ dialect: SqliteDialect });
 
+@Table({ tableName: "User" })
 export class User extends Model<
     InferAttributes<User>,
     InferCreationAttributes<User>
@@ -48,6 +54,19 @@ export class User extends Model<
     @NotNull
     @Unique
     declare email: string;
+
+    @CreatedAt
+    @Default(new Date())
+    declare createdAt?: Date;
+
+    @UpdatedAt
+    @Default(new Date())
+    declare updatedAt?: Date;
+
+    @BeforeSave
+    static setUpdatedAt(user: User) {
+        user.updatedAt = new Date();
+    }
 }
 
 export interface IUserInit {
