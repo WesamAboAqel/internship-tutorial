@@ -1,6 +1,6 @@
 import { IPostEdit, IPostInit, Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
-import { sequelize } from "../services/sequalize.js";
+import { sequelize } from "../services/sequalize.service.js";
 
 // @param      params - PostInit
 // @returns    Post

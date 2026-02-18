@@ -8,6 +8,7 @@ import {
 import bcrypt from "bcrypt";
 import {
     createUser,
+    getUserById,
     getUserByUsername,
 } from "../repository/user.repository.js";
 
@@ -33,7 +34,8 @@ export const register = async (
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const { firstName, lastName, username, password, email } = request.body;
+        const { firstName, lastName, username, password, email, role } =
+            request.body;
 
         const key = (request.file as any)?.key;
 
@@ -49,6 +51,7 @@ export const register = async (
             password: hashedPassword,
             email,
             fileName: key,
+            role: role ?? 1,
         };
 
         const { error } = JUserInit.validate(params);
@@ -83,7 +86,6 @@ export const login = async (
     }
 
     const match = await bcrypt.compare(password, user.password);
-    // console.log(match);
 
     if (!match) {
         response.send("Invalid Credentials");
@@ -92,5 +94,26 @@ export const login = async (
 
     response.locals.user = new UserResponseDTO(user);
     next();
-    // response.send("Welcome Back!").end();
+};
+
+// @desc    check if the user is an Admin (0)
+// @route   *
+// @access  Private
+export const ifAdmin = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const id = response.locals.payload.user_id;
+
+    const user: UserResponseDTO = await getUserById(id);
+
+    if (user.role != 0) {
+        response.send({
+            msg: "Not Enough Permissions",
+        });
+        return;
+    }
+
+    next();
 };

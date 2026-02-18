@@ -22,7 +22,7 @@ import { User } from "./user.model.js";
 import Joi from "joi";
 import crypto from "crypto";
 
-@Table({ tableName: "Sessions" })
+@Table({ tableName: "Sessions", createdAt: "createdAt", updatedAt: false })
 export class Session extends Model<
     InferAttributes<Session>,
     InferCreationAttributes<Session>

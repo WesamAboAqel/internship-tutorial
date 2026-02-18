@@ -14,7 +14,7 @@ import { Session } from "../models/session.model.js";
 // });
 
 export const sequelize = new Sequelize({
-    url: process.env.DATABASE_URL!,
+    url: process.env.MYSQL_URL!,
     dialect: "mysql",
     logging: false,
     models: [User, Post, Session],
@@ -22,9 +22,7 @@ export const sequelize = new Sequelize({
 
 export const testConnection = async () => {
     try {
-        // console.log(process.env.DATABASE_URL)
         await sequelize.authenticate();
-        await sequelize.sync({ alter: true });
         console.log("MySQL connected successfully.");
     } catch (error) {
         console.error("Unable to connect to MySQL:", error);

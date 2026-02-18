@@ -58,6 +58,11 @@ export class User extends Model<
     @Attribute(DataTypes.STRING)
     declare profilePicture: string;
 
+    @Attribute(DataTypes.INTEGER)
+    @NotNull
+    @Default(1)
+    declare role: number;
+
     @CreatedAt
     @Default(new Date())
     declare createdAt?: Date;
@@ -79,6 +84,7 @@ export interface IUserInit {
     password: string;
     email: string;
     fileName: string;
+    role: number;
 }
 
 export const JUserInit = Joi.object({
@@ -88,6 +94,7 @@ export const JUserInit = Joi.object({
     password: Joi.string().required(),
     email: Joi.string().email().required(),
     fileName: Joi.string(),
+    role: Joi.number(),
 });
 
 export class UserResponseDTO {
@@ -98,6 +105,7 @@ export class UserResponseDTO {
     // password!: string;
     email!: string;
     profilePicture!: string;
+    role!: number;
     // createdAt?: Date;
     // updatedAt?: Date;
 
@@ -109,6 +117,7 @@ export class UserResponseDTO {
         // this.password = user.password;
         this.email = user.email;
         this.profilePicture = user.profilePicture;
+        this.role = user.role;
         // this.createdAt = user.createdAt;
         // this.updatedAt = user.updatedAt;
     }

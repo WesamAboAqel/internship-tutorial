@@ -4,7 +4,7 @@ import {
     ISessionRefresh,
     Session,
 } from "../models/session.model.js";
-import { sequelize } from "../services/sequalize.js";
+import { sequelize } from "../services/sequalize.service.js";
 
 // @param      params - ISessionInit
 // @returns    session - Session

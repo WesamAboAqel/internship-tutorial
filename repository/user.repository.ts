@@ -35,11 +35,27 @@ export const createUser = async (
             password: params.password,
             email: params.email,
             profilePicture: params.fileName,
+            role: params.role ?? 1,
         });
 
         return new UserResponseDTO(user);
     } catch (error) {
         // console.log(error);
+        throw error;
+    }
+};
+
+// @param      id - number
+// @returns    user - UserResponseDTO
+// @notes      get user by id
+export const getUserById = async (id: number): Promise<UserResponseDTO> => {
+    try {
+        const user = await User.findByPk(id);
+
+        if (!user) throw new Error();
+
+        return new UserResponseDTO(user);
+    } catch (error) {
         throw error;
     }
 };

@@ -1,6 +1,7 @@
 import express from "express";
 import {
     getAllUsers,
+    ifAdmin,
     login,
     register,
 } from "../controllers/user.controller.js";
@@ -19,10 +20,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", Authenticate, getAllUsers);
-
-// router.get("/add/wesam", addWesam);
-// router.get("/add/ahmad", addAhmad);
+router.get("/", Authenticate, ifAdmin, getAllUsers);
 
 router.post(
     "/register",
