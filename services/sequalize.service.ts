@@ -20,7 +20,7 @@ export const sequelize = new Sequelize({
     models: [User, Post, Session],
 });
 
-export const testConnection = async () => {
+export const connectDatabase = async () => {
     try {
         await sequelize.authenticate();
         console.log("MySQL connected successfully.");
