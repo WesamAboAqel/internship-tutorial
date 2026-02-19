@@ -18,11 +18,14 @@ import {
     UpdatedAt,
     Default,
     BeforeSave,
+    BeforeCreate,
+    HasMany,
 } from "@sequelize/core/decorators-legacy";
 import Joi from "joi";
-// import { SqliteDialect } from '@sequelize/sqlite3';
-
-// const sequelize = new Sequelize({ dialect: SqliteDialect });
+import bcrypt from "bcrypt";
+import { Comment } from "./comment.model.js";
+import { Post } from "./post.model.js";
+import { Session } from "./session.model.js";
 
 @Table({ tableName: "User" })
 export class User extends Model<
@@ -75,6 +78,20 @@ export class User extends Model<
     static setUpdatedAt(user: User) {
         user.updatedAt = new Date();
     }
+
+    @BeforeCreate
+    static async encryptPassword(user: User) {
+        user.password = await bcrypt.hash(user.password, 10);
+    }
+
+    @HasMany(() => Comment, "user_id")
+    declare comments?: Comment[];
+
+    @HasMany(() => Post, "user_id")
+    declare posts?: Post[];
+
+    @HasMany(() => Session, "user_id")
+    declare sessions?: Session[];
 }
 
 export interface IUserInit {

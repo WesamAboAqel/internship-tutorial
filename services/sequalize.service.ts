@@ -3,6 +3,7 @@ import { MySqlDialect } from "@sequelize/mysql";
 import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import { Session } from "../models/session.model.js";
+import { Comment } from "../models/comment.model.js";
 
 // export const sequelize = new Sequelize( {
 //   dialect: MySqlDialect,
@@ -17,7 +18,7 @@ export const sequelize = new Sequelize({
     url: process.env.MYSQL_URL!,
     dialect: "mysql",
     logging: false,
-    models: [User, Post, Session],
+    models: [User, Post, Session, Comment],
 });
 
 export const connectDatabase = async () => {

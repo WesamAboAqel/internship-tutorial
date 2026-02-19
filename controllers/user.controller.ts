@@ -11,6 +11,7 @@ import {
     getUserById,
     getUserByUsername,
 } from "../repository/user.repository.js";
+import { AppError } from "../utils/Error.utils.js";
 
 // @desc    get All Users
 // @route   GET /api/users/
@@ -20,9 +21,16 @@ export const getAllUsers = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const users = await User.findAll();
+    try {
+        const users = await User.findAll();
 
-    response.send(users);
+        if (!users) {
+            throw new AppError("No users were found", 404);
+        }
+        response.send(users);
+    } catch (error) {
+        next(error);
+    }
 };
 
 // @desc    register user
@@ -39,19 +47,14 @@ export const register = async (
 
         const key = (request.file as any)?.key;
 
-        // console.log(key);
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // console.log(key);
         const params: IUserInit = {
             firstName,
             lastName,
             username,
-            password: hashedPassword,
+            password,
             email,
             fileName: key,
-            role: role ?? 1,
+            role,
         };
 
         const { error } = JUserInit.validate(params);
@@ -64,7 +67,7 @@ export const register = async (
 
         next();
     } catch (error) {
-        throw error;
+        next(error);
     }
 };
 
@@ -76,24 +79,26 @@ export const login = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const { username, password } = request.body;
+    try {
+        const { username, password } = request.body;
 
-    const user = await getUserByUsername(username);
+        const user = await getUserByUsername(username);
 
-    if (!user) {
-        response.send("User not found!");
-        return;
+        if (!user) {
+            throw new AppError("User not found!", 404);
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            throw new AppError("Invalid Credentials", 404);
+        }
+
+        response.locals.user = new UserResponseDTO(user);
+        next();
+    } catch (error) {
+        next(error);
     }
-
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-        response.send("Invalid Credentials");
-        return;
-    }
-
-    response.locals.user = new UserResponseDTO(user);
-    next();
 };
 
 // @desc    check if the user is an Admin (0)
@@ -104,16 +109,17 @@ export const ifAdmin = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const id = response.locals.payload.user_id;
+    try {
+        const id = response.locals.payload.user_id;
 
-    const user: UserResponseDTO = await getUserById(id);
+        const user: UserResponseDTO = await getUserById(id);
 
-    if (user.role != 0) {
-        response.send({
-            msg: "Not Enough Permissions",
-        });
-        return;
+        if (user.role != 0) {
+            throw new AppError("Not Enough Permissions", 404);
+        }
+
+        next();
+    } catch (error) {
+        next(error);
     }
-
-    next();
 };

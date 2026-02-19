@@ -16,8 +16,8 @@ export const getUserByUsername = async (username: string): Promise<User> => {
         }
 
         return user;
-    } catch {
-        throw new Error();
+    } catch (error) {
+        throw error;
     }
 };
 
@@ -40,7 +40,6 @@ export const createUser = async (
 
         return new UserResponseDTO(user);
     } catch (error) {
-        // console.log(error);
         throw error;
     }
 };

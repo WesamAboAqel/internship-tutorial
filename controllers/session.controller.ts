@@ -10,6 +10,7 @@ import {
     refreshSession,
 } from "../repository/session.repository.js";
 import jwt from "jsonwebtoken";
+import { AppError } from "../utils/Error.utils.js";
 
 // @desc    Initializing a Session
 // @route   POST /api/users/login & /api/users/register
@@ -19,33 +20,32 @@ export const generateTokens = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    response.locals.refreshToken = crypto.randomBytes(32).toString("hex");
+    try {
+        response.locals.refreshToken = crypto.randomBytes(32).toString("hex");
 
-    const params: ISessionInit = {
-        user_id: response.locals.user.id,
-        refreshTokenHash: response.locals.refreshToken,
-    };
+        const params: ISessionInit = {
+            user_id: response.locals.user.id,
+            refreshTokenHash: response.locals.refreshToken,
+        };
 
-    const { error } = JSessionInit.validate(params);
+        const { error } = JSessionInit.validate(params);
 
-    if (error) {
-        response.send({
-            msg: "Something went wrong",
-        });
-        return;
+        if (error) {
+            throw new AppError("Something went wrong", 404);
+        }
+
+        const session = await addSession(params);
+
+        response.locals.accessToken = jwt.sign(
+            { user_id: response.locals.user.id, session_id: session.id },
+            process.env.JWT_TOKEN_SECRET!,
+            { expiresIn: "600s" },
+        );
+
+        next();
+    } catch (error) {
+        next(error);
     }
-
-    const session = await addSession(params);
-
-    // console.log("Hello");
-
-    response.locals.accessToken = jwt.sign(
-        { user_id: response.locals.user.id, session_id: session.id },
-        process.env.JWT_TOKEN_SECRET!,
-        { expiresIn: "600s" },
-    );
-
-    next();
 };
 
 // @desc    Sends tokens to the client
@@ -56,11 +56,14 @@ export const sendTokens = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    // console.log("Hello");
-    response.status(200).json({
-        accessToken: response.locals.accessToken,
-        refreshToken: response.locals.refreshToken,
-    });
+    try {
+        response.status(200).json({
+            accessToken: response.locals.accessToken,
+            refreshToken: response.locals.refreshToken,
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 // @desc    Takes a refresh token and renews session
@@ -71,29 +74,33 @@ export const refreshTokens = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const { refreshToken } = request.body;
+    try {
+        const { refreshToken } = request.body;
 
-    const oldRefreshTokenHash = crypto
-        .createHash("sha256")
-        .update(refreshToken)
-        .digest("hex");
+        const oldRefreshTokenHash = crypto
+            .createHash("sha256")
+            .update(refreshToken)
+            .digest("hex");
 
-    console.log(oldRefreshTokenHash);
+        
 
-    response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
+        response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
 
-    const params: ISessionRefresh = {
-        oldRefreshTokenHash,
-        newRefreshToken: response.locals.refreshToken,
-    };
+        const params: ISessionRefresh = {
+            oldRefreshTokenHash,
+            newRefreshToken: response.locals.refreshToken,
+        };
 
-    const session = await refreshSession(params);
+        const session = await refreshSession(params);
 
-    response.locals.accessToken = jwt.sign(
-        { user_id: session.user_id, session_id: session.id },
-        process.env.JWT_TOKEN_SECRET!,
-        { expiresIn: "600s" },
-    );
+        response.locals.accessToken = jwt.sign(
+            { user_id: session.user_id, session_id: session.id },
+            process.env.JWT_TOKEN_SECRET!,
+            { expiresIn: "600s" },
+        );
 
-    next();
+        next();
+    } catch (error) {
+        next(error);
+    }
 };

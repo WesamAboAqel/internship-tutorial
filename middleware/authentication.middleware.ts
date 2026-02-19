@@ -33,8 +33,6 @@ export const Authenticate = async (
 ): Promise<void> => {
     const authHeader = request.headers["authorization"];
 
-    // console.log(authHeader);
-
     if (!authHeader) {
         response.send("No Auth Headers");
         return;
@@ -45,7 +43,6 @@ export const Authenticate = async (
         response.send("Not proper Auth Headers");
         return;
     }
-    // console.log(accessToken);
 
     const payload = jwt.verify(accessToken, process.env.JWT_TOKEN_SECRET!);
 

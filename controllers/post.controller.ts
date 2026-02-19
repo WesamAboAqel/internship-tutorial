@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { editPost, selectPostsByUserId } from "../repository/post.repository.js";
+import {
+    editPost,
+    selectPostsByUserId,
+} from "../repository/post.repository.js";
 import { IPostEdit, JPostEdit } from "../models/post.model.js";
 import Joi from "joi";
+import { AppError } from "../utils/Error.utils.js";
 
 // @desc    Get All Posts for a User
 // @route   GET /api/posts/:user_id
@@ -11,22 +15,21 @@ export const getPostsByUserId = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const stringUserId = request.params.user_id;
+    try {
+        const stringUserId = request.params.user_id;
 
-    // console.log(stringUserId);
+        if (!stringUserId || Array.isArray(stringUserId)) {
+            throw new AppError("Invalid User Id", 404);
+        }
 
-    if (!stringUserId || Array.isArray(stringUserId)) {
-        response.send({
-            msg: "Invalid User Id",
-        });
-        return;
+        const user_id = parseInt(stringUserId);
+
+        const posts = await selectPostsByUserId(user_id);
+
+        response.send(posts);
+    } catch (error) {
+        next(error);
     }
-
-    const user_id = parseInt(stringUserId);
-
-    const posts = await selectPostsByUserId(user_id);
-
-    response.send(posts).end();
 };
 
 // @desc    Update Post information
@@ -37,22 +40,25 @@ export const updatePost = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const { id, title, description } = request.body;
+    try {
+        const { id, title, description } = request.body;
 
-    const params: IPostEdit = {
-        id,
-        title,
-        description,
-    };
+        const params: IPostEdit = {
+            id,
+            title,
+            description,
+        };
 
-    const { error } = JPostEdit.validate(params);
+        const { error } = JPostEdit.validate(params);
 
-    if(error){
-        response.send({msg: "Invalid Information"})
-        return;
+        if (error) {
+            throw new AppError("Invalid Information", 404);
+        }
+
+        const post = await editPost(params);
+
+        response.send({ msg: "Edited Successfully", post });
+    } catch (error) {
+        next(error);
     }
-
-    const post = await editPost(params);
-
-    response.send({msg: "Edited Successfully", post});
 };

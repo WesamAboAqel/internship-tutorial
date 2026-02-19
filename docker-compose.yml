@@ -11,7 +11,7 @@ services:
             MYSQL_USER: intern
             MYSQL_PASSWORD: 12345678
         volumes:
-            - mysql_data:/var/lib/mysql
+            - mysql_data2:/var/lib/mysql
 
     redis:
         image: redis:latest
@@ -19,4 +19,4 @@ services:
         ports:
             - "6379:6379"
 volumes:
-    mysql_data:
+    mysql_data2:

@@ -18,10 +18,12 @@ import {
     UpdatedAt,
     Default,
     BeforeSave,
+    HasMany,
 } from "@sequelize/core/decorators-legacy";
 
 import Joi from "joi";
 import { User } from "./user.model.js";
+import { Comment } from "./comment.model.js";
 
 @Table({ tableName: "Post" })
 export class Post extends Model<
@@ -61,6 +63,9 @@ export class Post extends Model<
     static setUpdatedAt(post: Post) {
         post.updatedAt = new Date();
     }
+
+    @HasMany(() => Comment, "post_id")
+    declare comments?: Comment[];
 }
 
 export interface IPostInit {

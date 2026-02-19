@@ -11,12 +11,10 @@ import { sequelize } from "../services/sequalize.service.js";
 // @notes      Create Session
 export const addSession = async (params: ISessionInit): Promise<Session> => {
     try {
-        // console.log("Test");
         const session = await Session.create({
             user_id: params.user_id,
             refreshTokenHash: params.refreshTokenHash,
         });
-        // console.log(session.refreshTokenHash, params.refreshTokenHash);
 
         return session;
     } catch (error) {
@@ -38,7 +36,6 @@ export const refreshSession = async (
             },
             transaction: transaction,
         });
-        // console.log(oldSession);
 
         if (!oldSession) {
             throw new Error();
